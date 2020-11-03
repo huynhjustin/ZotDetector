@@ -3,10 +3,16 @@ An educational emotion recognition tool created by Nicholas Chiu, Justin Huynh, 
 
 ## How to Run
 
-### Install the requirements using pip (requirements.txt coming soon)
+### Install the requirements
+#### Using pip
 ```python
 pip install flask
 pip install opencv-contrib-python
+```
+
+#### Or using requirements.txt
+```python
+pip install -r requirements.txt
 ```
 
 ### Run the Flask project
