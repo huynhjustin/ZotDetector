@@ -1,0 +1,28 @@
+.header {
+  padding: 1rem;
+  background: gray;
+  color: white;
+  font-size: 30px;
+}
+
+/* Split the screen in half */
+.split {
+  height: 100%;
+  width: 50%;
+  position: relative;
+  top: 0;
+  padding-top: 20px;
+  float: left;
+}
+  
+/* Control the left side */
+.left {
+  left: 0;
+}
+  
+/* Control the right side */
+.right {
+  right: 0;
+  background-color: lightblue;
+}
+  
