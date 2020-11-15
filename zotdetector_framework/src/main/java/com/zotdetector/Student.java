@@ -24,10 +24,10 @@ public class Student {
     public String getEmail() { return this.email; }
 
     public String toString() {
-        return "Strudent{" +
-                "id='" + Integer.toString(this.id) + '\'' +
+        return "Student{" +
+                "id=" + Integer.toString(this.id) +
                 ", firstName='" + this.firstName + '\'' +
-                ", lastName=" + this.lastName +
+                ", lastName='" + this.lastName + '\'' +
                 ", email='" + this.email + '\'' +
                 '}';
     }
