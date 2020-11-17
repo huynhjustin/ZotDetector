@@ -21,6 +21,14 @@ public interface ZotdetectorRepository {
      */
     Map<String, Object> addStudent(Map<String, Object> payload);
 
+    /**
+     * API handler for emotion data
+     * /api/emotion
+     *
+     * @return
+     */
+    Map<String, Object> addEmotion(Map<String, Object> payload);
+
     // --------------------------------------------------------
     // Data retrieval endpoints
     // --------------------------------------------------------
