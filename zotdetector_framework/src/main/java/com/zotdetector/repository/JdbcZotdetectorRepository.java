@@ -24,14 +24,18 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-//import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.*;
 
 @RestController
 @Repository
 public class JdbcZotdetectorRepository implements ZotdetectorRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    // Collection of unique Student Ids
+    HashSet<Integer> uniqueIds = new HashSet<Integer>();
 
     // --------------------------------------------------------
     // Data ingestion endpoints
@@ -42,17 +46,21 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
             method = RequestMethod.POST
     )
     @Override
-    public Map<String, Boolean> addStudent(@RequestBody Map<String, Object> payload) {
-        Integer id = (Integer) payload.get("id");
+    public Map<String, Object> addStudent(@RequestBody Map<String, Object> payload) {
         String[] name = ((String) payload.get("name")).split(" ");
         String email = (String) payload.get("email");
+        Random rand = new Random();
+        Integer id = rand.nextInt(1000);
+        while (uniqueIds.contains(id)) id = rand.nextInt(1000); // Keep getting random id until unique
+        uniqueIds.add(id);
 
         this.jdbcTemplate.update(
-                "INSERT INTO Student(student_id, email, name_first, name_last) VALUES(?, ?, ?, ?)",
+                "INSERT INTO Student(id, email, name_first, name_last) VALUES(?, ?, ?, ?)",
                 id, email, name[0], name[1]
             );
-        Map<String, Boolean> json = new HashMap<String, Boolean>();
+        Map<String, Object> json = new HashMap<String, Object>();
         json.put("sucess", true);
+        json.put("id", id);
         return json;
     }
 
@@ -65,17 +73,18 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
             method = RequestMethod.GET
     )
     @Override
-    public Student getStudent(@RequestParam(required = false) Integer studentId) {
-        String sql = "SELECT student_id, email, name_first, name_last " +
+    public Student getStudent(@RequestParam(required = false) Integer id) {
+        String sql = "SELECT id, email, name_first, name_last " +
                 "FROM Student " +
-                "WHERE student_id = ?";
+                "WHERE id = ?";
         return jdbcTemplate.query(connection -> {
             PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, studentId);
+            stmt.setInt(1, id);
             return stmt;
         }, resultSet -> {
+            Student s;
             if (resultSet.next()) {
-                return new Student(resultSet.getInt("student_id"), resultSet.getString("name_first"),
+                return new Student(resultSet.getInt("id"), resultSet.getString("name_first"),
                         resultSet.getString("name_last"), resultSet.getString("email"));
             }
             return new Student(-1, "", "", "");

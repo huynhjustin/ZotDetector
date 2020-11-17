@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
-//import java.util.List;
 import java.util.Map;
 
 public interface ZotdetectorRepository {
@@ -16,11 +15,11 @@ public interface ZotdetectorRepository {
     // --------------------------------------------------------
     /**
      * API handler for student data
-     * /api/student[?name=xxx[&email=xxx]]
+     * /api/student
      *
      * @return
      */
-    Map<String, Boolean> addStudent(Map<String, Object> payload);
+    Map<String, Object> addStudent(Map<String, Object> payload);
 
     // --------------------------------------------------------
     // Data retrieval endpoints
@@ -28,10 +27,10 @@ public interface ZotdetectorRepository {
 
     /**
      * API handler for student data
-     * /api/student
+     * /api/student[?id=xxx]
      *
-     * @param studentId     Retrieve Student information that matches the specified id
-     * @return              Student that matches the filter
+     * @param id     Retrieve Student information that matches the specified id
+     * @return       Student that matches the filter
      */
-    Student getStudent(Integer studentId);
+    Student getStudent(Integer id);
 }

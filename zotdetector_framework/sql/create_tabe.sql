@@ -4,11 +4,11 @@ USE zotdetectordb;
 
 -- SQL DDLs for Entities and their supporting tables
 CREATE TABLE Student (
-	student_id  INTEGER,
+	id  		INTEGER,
 	email       VARCHAR(50) NOT NULL,
     name_first  VARCHAR(20) NOT NULL,
     name_last   VARCHAR(20) NOT NULL,
-	PRIMARY KEY (student_id)
+	PRIMARY KEY (id)
 );
 
 CREATE TABLE Day (
@@ -19,10 +19,10 @@ CREATE TABLE Day (
 -- SQL DDLs for Relationships
 CREATE TABLE TrackDay (
 	date        DATE,
-    student_id  INTEGER,
+    id  		INTEGER,
     emotion     ENUM('sad', 'happy', 'stressed') NOT NULL,
     amount      DECIMAL NOT NULL,
-    PRIMARY KEY (student_id, date),
-    FOREIGN KEY (student_id) REFERENCES Student (student_id) ON DELETE CASCADE,
+    PRIMARY KEY (id, date),
+    FOREIGN KEY (id) REFERENCES Student (id) ON DELETE CASCADE,
     FOREIGN KEY (date) REFERENCES Day (date) ON DELETE CASCADE
 );
