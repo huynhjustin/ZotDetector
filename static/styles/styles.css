@@ -1,8 +1,15 @@
 .header {
-  padding: 1rem;
+  padding: 0.2rem;
   background: gray;
   color: white;
-  font-size: 30px;
+  font-size: 2rem;
+  font-family: sans-serif;
+}
+#zot{
+  color: white;
+}
+#detector{
+  color: gold;
 }
 
 /* Split the screen in half */
@@ -11,18 +18,25 @@
   width: 50%;
   position: relative;
   top: 0;
-  padding-top: 20px;
   float: left;
+  background-color: gray;
 }
   
 /* Control the left side */
 .left {
   left: 0;
+  background-color: white;
 }
   
 /* Control the right side */
 .right {
   right: 0;
   background-color: lightblue;
+
+}
+
+/*Positions the card */
+.card{
+  left: 200px;
 }
   
