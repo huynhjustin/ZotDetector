@@ -82,12 +82,31 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
             stmt.setInt(1, id);
             return stmt;
         }, resultSet -> {
-            Student s;
             if (resultSet.next()) {
                 return new Student(resultSet.getInt("id"), resultSet.getString("name_first"),
                         resultSet.getString("name_last"), resultSet.getString("email"));
             }
             return new Student(-1, "", "", "");
         });
+    }
+
+    // Retrieve complete EmotionDay data from student id and duration
+    @RequestMapping(
+            value = "api/ret/allEmotions",
+            method = RequestMethod.GET
+    )
+    @Override
+    public List<EmotionDay> getEmotions(@RequestParam(required = false) Integer id, Integer duration) {
+        String sql = "DECLARE @StartDate DATE = CURDATE() " +
+                "SELECT date, emotion, amount " +
+                "FROM TrackDay " +
+                "WHERE id = ? AND BETWEEN @StartDate AND DATEADD(DAY, ?, @StartDate)";
+        return jdbcTemplate.query(connection -> {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1, id);
+            stmt.setInt(2, duration * -1)
+            return stmt;
+        }, (resultSet, i) -> new EmotionDay(id, resultSet.getString("emotion"),
+                resultSet.getDouble("amount"), resultSet.getString("date")));
     }
 }
