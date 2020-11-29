@@ -96,13 +96,6 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
             String emotion = "happy";
             Double amount = 0.5;
 
-            // Upsert date into SQL database
-            this.jdbcTemplate.update(
-                    "INSERT INTO Day (date) " +
-                            "SELECT ? WHERE NOT EXISTS(SELECT * FROM Day WHERE date = ?)",
-                    sqlDate, sqlDate
-            );
-
             // Upsert emotion data into SQL database
             // TODO calculate average emotion rather than overriding existing data
             this.jdbcTemplate.update(
