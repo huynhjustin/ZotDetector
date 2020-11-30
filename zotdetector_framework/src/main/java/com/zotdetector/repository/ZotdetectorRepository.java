@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.List;
 
 public interface ZotdetectorRepository {
     // --------------------------------------------------------
@@ -50,4 +51,15 @@ public interface ZotdetectorRepository {
      * @return          List of EmotionDay that match the filters
      */
     List<EmotionDay> getEmotions(Integer id, Integer duration);
+
+    // --------------------------------------------------------
+    // Database Admin endpoints - TAKE CAUTION BEFORE USING
+    // --------------------------------------------------------
+    /**
+     * API handler to delete ALL local database records
+     * /api/deleteDatabase
+     *
+     * @return
+     */
+    Map<String, Object> deleteDatabase();
 }

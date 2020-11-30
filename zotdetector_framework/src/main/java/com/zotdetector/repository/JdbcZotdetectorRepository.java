@@ -88,10 +88,7 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
         }
         // Convert string into SQL Date object
         try {
-            String dateStr = (String) payload.get("date");
-            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-            java.util.Date date = sdf.parse(dateStr);
-            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+            String date = (String) payload.get("date");
             // TODO get emotion and amount from DS side
             String emotion = "happy";
             Double amount = 0.5;
@@ -101,11 +98,11 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
             this.jdbcTemplate.update(
                     "INSERT INTO TrackDay (date, id, emotion, amount) VALUES (?, ?, ?, ?) " +
                             "ON DUPLICATE KEY UPDATE emotion = ?, amount = ?",
-                    sqlDate, id, emotion, amount, emotion, amount
+                    date, id, emotion, amount, emotion, amount
             );
             json.put("success", true);
             json.put("id", id);
-            json.put("date", dateStr);
+            json.put("date", date);
         } catch (Exception e) {
             json.put("success", false);
             json.put("message", e.getMessage());
@@ -131,6 +128,7 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
             stmt.setInt(1, id);
             return stmt;
         }, resultSet -> {
+            Student s;
             if (resultSet.next()) {
                 return new Student(resultSet.getInt("id"), resultSet.getString("name_first"),
                         resultSet.getString("name_last"), resultSet.getString("email"));
@@ -146,16 +144,36 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
     )
     @Override
     public List<EmotionDay> getEmotions(@RequestParam(required = false) Integer id, Integer duration) {
-        String sql = "DECLARE @StartDate DATE = CURDATE() " +
-                "SELECT date, emotion, amount " +
+        String sql = "SELECT date, emotion, amount " +
                 "FROM TrackDay " +
-                "WHERE id = ? AND BETWEEN @StartDate AND DATEADD(DAY, ?, @StartDate)";
+                "WHERE id = ? AND date >= ADDDATE(CURDATE(), ?)";
         return jdbcTemplate.query(connection -> {
             PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setString(1, id);
-            stmt.setInt(2, duration * -1)
+            stmt.setInt(1, id);
+            stmt.setInt(2, duration * -1);
             return stmt;
         }, (resultSet, i) -> new EmotionDay(id, resultSet.getString("emotion"),
                 resultSet.getDouble("amount"), resultSet.getString("date")));
+    }
+
+    // --------------------------------------------------------
+    // Database Admin endpoints - TAKE CAUTION BEFORE USING
+    // --------------------------------------------------------
+    // Delete ALL records in local SQL database
+    @RequestMapping(
+            value = "/api/deleteDatabase",
+            method = RequestMethod.POST
+    )
+    @Override
+    public Map<String, Object> deleteDatabase() {
+        Map<String, Object> json = new HashMap<String, Object>();
+        try {
+            this.jdbcTemplate.update("DELETE FROM Student");
+            json.put("success", true);
+        } catch (Exception e) {
+            json.put("success", false);
+            json.put("message", e.getMessage());
+        }
+        return json;
     }
 }

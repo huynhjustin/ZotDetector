@@ -1,6 +1,8 @@
 package com.zotdetector;
 
-emun Emotion {HAPPY, SAD, STRESSED}
+enum Emotion {
+    HAPPY, SAD, STRESSED;
+}
 
 public class EmotionDay {
     private int id;
@@ -10,7 +12,7 @@ public class EmotionDay {
 
     public EmotionDay(int id, String emotion, double amount, String date) {
         this.id = id;
-        this.emotion = this.stringToEmotion(emotion);
+        this.emotion = Emotion.valueOf(emotion.toUpperCase());
         this.amount = amount;
         this.date = date;
     }
@@ -23,27 +25,11 @@ public class EmotionDay {
 
     public String getDate() { return this.date; }
 
-    public Emotion stringToEmotion(String emotion) {
-        switch (emotion) {
-            case "happy": return Emotion.HAPPY;
-            case "sad": return Emotion.SAD;
-            case "stressed": return Emotion.STRESSED;
-        }
-    }
-
-    public String emotionToString() {
-        switch (this.emotion) {
-            case HAPPY: return "happy";
-            case SAD: return "sad";
-            case STRESSED: return "stressed";
-        }
-    }
-
     public String toString() {
         return "EmotionDay{" +
                 "id=" + Integer.toString(this.id) +
-                ", emotion='" + this.emotionToString() + '\'' +
-                ", amount='" + Integer.toString(this.amount) + '\'' +
+                ", emotion='" + this.emotion.toString() + '\'' +
+                ", amount='" + Double.toString(this.amount) + '\'' +
                 ", date='" + this.date + '\'' +
                 '}';
     }
