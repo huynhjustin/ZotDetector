@@ -11,18 +11,12 @@ CREATE TABLE Student (
 	PRIMARY KEY (id)
 );
 
-CREATE TABLE Day (
-    date DATE,
-    PRIMARY KEY (date)
-);
-
 -- SQL DDLs for Relationships
 CREATE TABLE TrackDay (
 	date        DATE,
     id  		INTEGER,
     emotion     ENUM('sad', 'happy', 'stressed') NOT NULL,
-    amount      DECIMAL NOT NULL,
+    amount      DECIMAL(3,2) NOT NULL,
     PRIMARY KEY (id, date),
-    FOREIGN KEY (id) REFERENCES Student (id) ON DELETE CASCADE,
-    FOREIGN KEY (date) REFERENCES Day (date) ON DELETE CASCADE
+    FOREIGN KEY (id) REFERENCES Student (id) ON DELETE CASCADE
 );

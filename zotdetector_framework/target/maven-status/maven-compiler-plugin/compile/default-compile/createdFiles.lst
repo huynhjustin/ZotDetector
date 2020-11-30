@@ -1,5 +1,7 @@
 com/zotdetector/repository/ZotdetectorRepository.class
-com/zotdetector/repository/JdbcZotdetectorRepository.class
-com/zotdetector/ZotdetectorApplication.class
+com/zotdetector/EmotionDay.class
 com/zotdetector/ServletInitializer.class
 com/zotdetector/Student.class
+com/zotdetector/Emotion.class
+com/zotdetector/repository/JdbcZotdetectorRepository.class
+com/zotdetector/ZotdetectorApplication.class

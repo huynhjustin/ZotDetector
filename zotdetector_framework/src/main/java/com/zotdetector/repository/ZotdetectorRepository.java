@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.List;
 
 public interface ZotdetectorRepository {
     // --------------------------------------------------------
@@ -15,7 +16,7 @@ public interface ZotdetectorRepository {
     // --------------------------------------------------------
     /**
      * API handler for student data
-     * /api/student
+     * /api/data/student
      *
      * @return
      */
@@ -23,7 +24,7 @@ public interface ZotdetectorRepository {
 
     /**
      * API handler for emotion data
-     * /api/emotion
+     * /api/data/emotion
      *
      * @return
      */
@@ -32,13 +33,33 @@ public interface ZotdetectorRepository {
     // --------------------------------------------------------
     // Data retrieval endpoints
     // --------------------------------------------------------
-
     /**
      * API handler for student data
-     * /api/student[?id=xxx]
+     * /api/ret/student[?id=xxx]
      *
      * @param id     Retrieve Student information that matches the specified id
      * @return       Student that matches the filter
      */
     Student getStudent(Integer id);
+
+    /**
+     * API handler for emotional data
+     * /api/ret/allEmotions[?id=xxx[&duration=xxx]]
+     *
+     * @param id        Retrieve Emotion information that matches the specifed id
+     * @param duration  Retrieve Emotion information within specifed duration
+     * @return          List of EmotionDay that match the filters
+     */
+    List<EmotionDay> getEmotions(Integer id, Integer duration);
+
+    // --------------------------------------------------------
+    // Database Admin endpoints - TAKE CAUTION BEFORE USING
+    // --------------------------------------------------------
+    /**
+     * API handler to delete ALL local database records
+     * /api/deleteDatabase
+     *
+     * @return
+     */
+    Map<String, Object> deleteDatabase();
 }
