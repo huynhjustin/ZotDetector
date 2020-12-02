@@ -87,7 +87,7 @@ class VideoCamera(object):
 			#cv2.putText(frame, "[Emotion]", (x+20, y-60), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
 		# Converts frame to .jpg for flask	
-		ret, jpeg = cv2.imencode('.jpg', frame)
+		ret, jpeg = cv2.imencode('.jpg', cv2.resize(frame,(300,300),interpolation = cv2.INTER_CUBIC))
 
 		return jpeg.tobytes()
 	# EOF #
