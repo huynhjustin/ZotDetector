@@ -33,10 +33,10 @@ def hello():
     URL = "http://localhost:8080/api/ret/student?id=476"
     
     # defining a params dict for the parameters to be sent to the API 
-    PARAMS = {'address':location} 
+    #PARAMS = {'address':location} 
     
     # sending get request and saving the response as response object 
-    r = requests.get(url = URL, params = PARAMS) 
+    r = requests.get(url = URL) 
     
     # extracting data in json format 
     data = r.json() 
