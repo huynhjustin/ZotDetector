@@ -7,17 +7,17 @@
   <body>
     <div class="header">
       <p><span id="zot">Zot</span><span id="detector">Detector</span><span style="float:right;">Good morning, <span><strong>{{content}}!</strong></span></span></p>
-      
-      <div class = "Page_labels">
+
+      <div class = "Pages">
         <nav>
-            <ul>
-                <a href="{{  url_for('index') }}">Home</a>
-                <a href="{{  url_for('statistics') }}">Statistics</a>
-            </ul>
+          <ul>
+              <li><a href="{{  url_for('index') }}">Home</a></li>
+              <li><a href="{{  url_for('statistics') }}">Statistics</a></li>
+          </ul>
         </nav>
       </div>
     </div>
-
+    
     <div class="main-container">
       <div class="split left">
         <div class="card border border-white" style="width: 20rem; height: 20rem">

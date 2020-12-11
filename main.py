@@ -9,7 +9,11 @@ app = Flask(__name__)
 @app.route('/', methods=['GET', 'POST'])
 def index():
     # Render webpage
-    return render_template('index.html')
+    return render_template('index.html', content="Dylan") #replace Dylan with Name
+
+@app.route('/statistics/')
+def statistics():
+    return render_template('statistics.html') 
 # EOF #
 
 def generate(camera):
