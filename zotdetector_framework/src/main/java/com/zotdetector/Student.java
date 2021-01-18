@@ -19,8 +19,6 @@ public class Student {
 
     public String getLastName() { return this.lastName; }
 
-    public String getName() { return this.firstName + " " + this.lastName; }
-
     public String getEmail() { return this.email; }
 
     public String toString() {
