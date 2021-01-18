@@ -58,6 +58,13 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
             while (uniqueIds.contains(id)) id = rand.nextInt(1000); // Keep getting random id until unique
             uniqueIds.add(id);
 
+            // Check if Student record already exists with specified email, if one exists then throw exception
+            String sql = "SELECT COUNT(*) FROM Student WHERE email = ?";
+            int count = jdbcTemplate.queryForObject(sql, new Object[]{email}, Integer.class);
+            if (count > 0) {
+                throw new IllegalArgumentException("Student record with email '" + email + "' already exists.");
+            }
+            // Ingest Student data if specified email is not already in use
             this.jdbcTemplate.update(
                     "INSERT INTO Student(id, email, name_first, name_last) VALUES(?, ?, ?, ?)",
                     id, email, name[0], name[1]
