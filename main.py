@@ -2,14 +2,30 @@
 from flask import Flask, render_template, Response, request, url_for, redirect
 from camera import VideoCamera
 import requests
+import mysql.connector
 
 # Initialize Flask app
 app = Flask(__name__)
 
+# Connect to local mySQL database and extract table
+connection = mysql.connector.connect(user='root', password='password', database='zotdetectordb')
+cursor = connection.cursor()
+cursor.execute("SELECT * FROM student") # Run this query
+#rows = cursor.fetchall()
+sql_data = "<table style='border:1px solid red'>"
+sql_data_raw = []
+for row in cursor:
+    sql_data = sql_data + "<tr>"
+    for i in row:
+        sql_data = sql_data + "<td>" + str(i) + "</td>"
+        sql_data_raw.append(i)
+    sql_data = sql_data + "</tr>"
+connection.close()
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     # Render webpage
-    return render_template('index.html', content="Dylan") #replace Dylan with Name
+    return render_template('index.html', content="Dylan", sql_data=sql_data_raw) #replace Dylan with Name
 
 @app.route('/statistics/')
 def statistics():
@@ -54,6 +70,10 @@ def disclaimer():
             return redirect(url_for('index'))
     elif request.method == 'GET':
         return render_template("disclaimer.html")
+
+@app.route('/sqltest') # At this address, display table from mySQL query
+def sqltest():
+    return "<html><body>" + sql_data + "</body></html>" # Return with HTML tags
 
 if __name__ == '__main__':
     # Set server address and port (localhost:5000)
