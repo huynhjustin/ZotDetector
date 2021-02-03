@@ -44,10 +44,13 @@ model.add(Dense(1024, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(7, activation='softmax'))
 
+
+
 class VideoCamera(object):
 	def __init__(self):
 		# Video Capture
 		self.video = cv2.VideoCapture(0)
+		self.emotions_count = {"Angry": 0, "Disgusted": 0, "Fearful": 0, "Happy": 0, "Neutral": 0, "Sad": 0, "Surprised": 0}
 	# EOF #
 
 	def __del__(self):
@@ -84,6 +87,7 @@ class VideoCamera(object):
 			# Show text of emotion in camera feed
 			cv2.putText(frame, emotions_dict[index], (x+20, y-60), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
 			print(emotions_dict[index])
+			self.emotions_count[emotions_dict[index]] += 1
 			#cv2.putText(frame, "[Emotion]", (x+20, y-60), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
 		# Converts frame to .jpg for flask	

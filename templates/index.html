@@ -23,7 +23,7 @@
         <div class="card border border-white" style="width: 20rem; height: 20rem">
           <img class="rounded-circle" src="{{ url_for('video_feed') }}">
           <br>
-          <button type="button">Start/Stop</button>
+          <a href="/your_flask_function"><input type="button" value="Start/Stop"></a>
         </div>
       </div>
     
@@ -34,7 +34,8 @@
         <li>{{sql_data}}</li>
       </ul>
 
-    </div>  
+    </div> 
+
   </body>
   
 </html>

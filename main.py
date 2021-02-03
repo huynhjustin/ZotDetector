@@ -7,6 +7,8 @@ import mysql.connector
 # Initialize Flask app
 app = Flask(__name__)
 
+button_flag = False
+
 # Connect to local mySQL database and extract table
 connection = mysql.connector.connect(user='root', password='password', database='zotdetectordb')
 cursor = connection.cursor()
@@ -33,11 +35,19 @@ def statistics():
 # EOF #
 
 def generate(camera):
-    while True:
+    while button_flag:
         # Get camera frame
         frame = camera.get_frame()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+    
+    emotions_sum = sum(camera.emotions_count.values())
+    print(emotions_sum)
+    if emotions_sum > 0:
+        for i in camera.emotions_count:
+            camera.emotions_count[i] = (camera.emotions_count[i]*100.0)/emotions_sum
+        print(camera.emotions_count)
+    # Put it into the database here
 # EOF #
 
 # Video feed for HTML
@@ -74,6 +84,13 @@ def disclaimer():
 @app.route('/sqltest') # At this address, display table from mySQL query
 def sqltest():
     return "<html><body>" + sql_data + "</body></html>" # Return with HTML tags
+
+@app.route('/your_flask_function')
+def change_button_flag():
+    global button_flag
+    button_flag = not button_flag
+    return redirect(url_for('index'))
+
 
 if __name__ == '__main__':
     # Set server address and port (localhost:5000)
