@@ -93,19 +93,27 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
             json.put("message", "Student id does not exist");
             return json;
         }
-        // Convert string into SQL Date object
         try {
+            // Convert string into SQL Date object
             String date = (String) payload.get("date");
-            // TODO get emotion and amount from DS side
-            String emotion = "happy";
-            Double amount = 0.5;
+            // Get Map of emotions to values
+            Map<String, Double> emotions = (HashMap<String, Double>) payload.get("emotions");
 
             // Upsert emotion data into SQL database
-            // TODO calculate average emotion rather than overriding existing data
+            // If emotional data for specified date already exits, override existing data
             this.jdbcTemplate.update(
-                    "INSERT INTO TrackDay (date, id, emotion, amount) VALUES (?, ?, ?, ?) " +
-                            "ON DUPLICATE KEY UPDATE emotion = ?, amount = ?",
-                    date, id, emotion, amount, emotion, amount
+                    "INSERT INTO Emotions (date, id, angry, disgusted, " +
+                            "fearful, happy, neutral, sad, surprised) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+                            "ON DUPLICATE KEY UPDATE angry = ?, disgusted = ?, " +
+                            "fearful = ?, happy = ?, neutral = ?, sad = ?, surprised = ?",
+                    date, id, emotions.getOrDefault("angry", 0.0), emotions.getOrDefault("disgusted", 0.0),
+                    emotions.getOrDefault("fearful", 0.0), emotions.getOrDefault("happy", 0.0),
+                    emotions.getOrDefault("neutral", 0.0), emotions.getOrDefault("sad", 0.0),
+                    emotions.getOrDefault("surprised", 0.0), emotions.getOrDefault("angry", 0.0),
+                    emotions.getOrDefault("disgusted", 0.0), emotions.getOrDefault("fearful", 0.0),
+                    emotions.getOrDefault("happy", 0.0), emotions.getOrDefault("neutral", 0.0),
+                    emotions.getOrDefault("sad", 0.0), emotions.getOrDefault("surprised", 0.0)
             );
             json.put("success", true);
             json.put("id", id);
@@ -151,16 +159,20 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
     )
     @Override
     public List<EmotionDay> getEmotions(@RequestParam(required = false) Integer id, Integer duration) {
-        String sql = "SELECT date, emotion, amount " +
-                "FROM TrackDay " +
+        String sql = "SELECT date, angry, disgusted, fearful, happy, neutral, sad, surprised " +
+                "FROM Emotions " +
                 "WHERE id = ? AND date >= ADDDATE(CURDATE(), ?)";
         return jdbcTemplate.query(connection -> {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setInt(1, id);
             stmt.setInt(2, duration * -1);
             return stmt;
-        }, (resultSet, i) -> new EmotionDay(id, resultSet.getString("emotion"),
-                resultSet.getDouble("amount"), resultSet.getString("date")));
+        }, (resultSet, i) -> new EmotionDay(id, resultSet.getString("date"),
+                resultSet.getDouble("angry"), resultSet.getDouble("disgusted"),
+                resultSet.getDouble("fearful"), resultSet.getDouble("happy"),
+                resultSet.getDouble("neutral"), resultSet.getDouble("sad"),
+                resultSet.getDouble("surprised"))
+        );
     }
 
     // --------------------------------------------------------

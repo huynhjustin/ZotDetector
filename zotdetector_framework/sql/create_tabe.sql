@@ -11,12 +11,16 @@ CREATE TABLE Student (
 	PRIMARY KEY (id)
 );
 
--- SQL DDLs for Relationships
-CREATE TABLE TrackDay (
+CREATE TABLE Emotions (
 	date        DATE,
     id  		INTEGER,
-    emotion     ENUM('sad', 'happy', 'stressed') NOT NULL,
-    amount      DECIMAL(3,2) NOT NULL,
+    angry       DECIMAL(4,2) NOT NULL,
+    disgusted   DECIMAL(4,2) NOT NULL,
+    fearful     DECIMAL(4,2) NOT NULL,
+    happy       DECIMAL(4,2) NOT NULL,
+    neutral     DECIMAL(4,2) NOT NULL,
+    sad         DECIMAL(4,2) NOT NULL,
+    surprised   DECIMAL(4,2) NOT NULL,
     PRIMARY KEY (id, date),
     FOREIGN KEY (id) REFERENCES Student (id) ON DELETE CASCADE
 );
