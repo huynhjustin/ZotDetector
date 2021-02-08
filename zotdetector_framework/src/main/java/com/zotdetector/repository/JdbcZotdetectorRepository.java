@@ -154,7 +154,7 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
 
     // Retrieve complete EmotionDay data from student id and duration
     @RequestMapping(
-            value = "api/ret/allEmotions",
+            value = "api/ret/all_emotions",
             method = RequestMethod.GET
     )
     @Override
@@ -180,7 +180,7 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
     // --------------------------------------------------------
     // Delete ALL records in local SQL database
     @RequestMapping(
-            value = "/api/deleteDatabase",
+            value = "/api/delete_database",
             method = RequestMethod.POST
     )
     @Override
