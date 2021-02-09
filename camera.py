@@ -50,7 +50,7 @@ class VideoCamera(object):
 	def __init__(self):
 		# Video Capture
 		self.video = cv2.VideoCapture(0)
-		self.emotions_count = {"Angry": 0, "Disgusted": 0, "Fearful": 0, "Happy": 0, "Neutral": 0, "Sad": 0, "Surprised": 0}
+		self.emotions_count = {"angry": 0, "disgusted": 0, "fearful": 0, "happy": 0, "neutral": 0, "sad": 0, "surprised": 0}
 	# EOF #
 
 	def __del__(self):
@@ -63,7 +63,7 @@ class VideoCamera(object):
 		# Load weights from the model .h5 file
 		model.load_weights('model.h5')
 
-		emotions_dict = {0: "Angry", 1: "Disgusted", 2: "Fearful", 3: "Happy", 4: "Neutral", 5: "Sad", 6: "Surprised"}
+		emotions_dict = {0: "angry", 1: "disgusted", 2: "fearful", 3: "happy", 4: "neutral", 5: "sad", 6: "surprised"}
 
 		# Extract frames for camera
 		ret, frame = self.video.read()

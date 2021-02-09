@@ -3,6 +3,7 @@ from flask import Flask, render_template, Response, request, url_for, redirect
 from camera import VideoCamera
 import requests
 import mysql.connector
+import json
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -24,10 +25,17 @@ for row in cursor:
     sql_data = sql_data + "</tr>"
 connection.close()
 
+# Emotion retrieval
+url = "http://localhost:8080/api/ret/all_emotions?id=837&duration=7" # GET request API URL for retrieving emotions
+r = requests.get(url = url) 
+    
+emotions_data = r.json() # JSON object with response (emotion data)
+print(emotions_data)
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     # Render webpage
-    return render_template('index.html', content="Dylan", sql_data=sql_data_raw) #replace Dylan with Name
+    return render_template('index.html', content="[insert Name]", sql_data=sql_data_raw, get_emotions_data=emotions_data) #replace Dylan with Name
 
 @app.route('/statistics/')
 def statistics():
@@ -42,12 +50,21 @@ def generate(camera):
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
     
     emotions_sum = sum(camera.emotions_count.values())
-    print(emotions_sum)
+    #print(emotions_sum)
     if emotions_sum > 0:
         for i in camera.emotions_count:
             camera.emotions_count[i] = (camera.emotions_count[i]*100.0)/emotions_sum
         print(camera.emotions_count)
-    # Put it into the database here
+
+        # Put it into the database here
+        url = 'http://localhost:8080/api/data/emotion' # Define API url
+        headers = {'Content-Type': 'application/json'} # Define headers for input type
+        emotions_dict = json.dumps(camera.emotions_count) # Create JSON string from emotions dictionary
+        emotions_dict_loaded = json.loads(emotions_dict) # Load dictionary 
+        data_json = json.dumps({"id": 837, "date": "2021-02-07", "emotions": emotions_dict_loaded}) # Create body for POST request
+
+        x = requests.request("POST", url, headers=headers, data=data_json) # POST Request to input into database
+        print(x.text) # Print response
 # EOF #
 
 # Video feed for HTML

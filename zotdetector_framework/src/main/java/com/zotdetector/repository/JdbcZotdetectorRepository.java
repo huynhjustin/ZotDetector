@@ -88,11 +88,11 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
         Map<String, Object> json = new HashMap<String, Object>();
         // Verify if student id already exists
         Integer id = (Integer) payload.get("id");
-        if (!uniqueIds.contains(id)) {
+        /*if (!uniqueIds.contains(id)) {
             json.put("success", false);
             json.put("message", "Student id does not exist");
             return json;
-        }
+        }*/
         try {
             // Convert string into SQL Date object
             String date = (String) payload.get("date");

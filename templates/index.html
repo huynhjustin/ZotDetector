@@ -6,7 +6,7 @@
   </head>
   <body>
     <div class="header">
-      <p><span id="zot">Zot</span><span id="detector">Detector</span><span style="float:right;">Good morning, <span><strong>{{content}}!</strong></span></span></p>
+      <p><span id="zot">Zot</span><span id="detector">Detector</span><span style="float:right;">Good morning, <span contentEditable="true"><strong>{{content}}</strong></span></span></p>
       
       <div class = "Page_labels">
         <nav>
@@ -29,10 +29,11 @@
     
       <div class="split right">
         <p>Weekly Pattern</p>
+        <ul>
+          <li>{{sql_data}}</li>
+          <p>{{get_emotions_data}}</p>
+        </ul>
       </div>
-      <ul>
-        <li>{{sql_data}}</li>
-      </ul>
 
     </div> 
 
