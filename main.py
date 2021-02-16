@@ -26,7 +26,7 @@ for row in cursor:
 connection.close()
 
 # Emotion retrieval
-url = "http://localhost:8080/api/ret/all_emotions?id=837&duration=7" # GET request API URL for retrieving emotions
+url = "http://localhost:8080/api/ret/all_emotions?id=837&duration=14" # GET request API URL for retrieving emotions
 r = requests.get(url = url) 
     
 emotions_data = r.json() # JSON object with response (emotion data)
@@ -61,7 +61,7 @@ def generate(camera):
         headers = {'Content-Type': 'application/json'} # Define headers for input type
         emotions_dict = json.dumps(camera.emotions_count) # Create JSON string from emotions dictionary
         emotions_dict_loaded = json.loads(emotions_dict) # Load dictionary 
-        data_json = json.dumps({"id": 837, "date": "2021-02-07", "emotions": emotions_dict_loaded}) # Create body for POST request
+        data_json = json.dumps({"id": 674, "date": "2021-02-07", "emotions": emotions_dict_loaded}) # Create body for POST request
 
         x = requests.request("POST", url, headers=headers, data=data_json) # POST Request to input into database
         print(x.text) # Print response
