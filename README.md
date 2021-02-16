@@ -8,6 +8,8 @@ An educational emotion recognition tool created by Nicholas Chiu, Justin Huynh, 
 ```python
 pip install flask
 pip install opencv-contrib-python
+pip install tensorflow
+pip install mysql-connector-python
 ```
 
 #### Or using requirements.txt

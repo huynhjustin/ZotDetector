@@ -1,2 +1,4 @@
 flask==1.1.2
 opencv-contrib-python==4.4.0.44
+tensorflow==2.2.0
+mysql-connector-python==8.0.21
