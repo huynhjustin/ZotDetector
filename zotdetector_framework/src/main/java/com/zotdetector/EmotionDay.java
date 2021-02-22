@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EmotionDay {
-    private int id;
     private String date;
     private Double angry;
     private Double disgusted;
@@ -14,10 +13,8 @@ public class EmotionDay {
     private Double sad;
     private Double surprised;
 
-    public EmotionDay(int id, String date, Double angry, Double disgusted,
-                      Double fearful, Double happy, Double neutral, Double sad,
-                      Double surprised) {
-        this.id = id;
+    public EmotionDay(String date, Double angry, Double disgusted, Double fearful,
+                      Double happy, Double neutral, Double sad, Double surprised) {
         this.date = date;
         this.angry = angry;
         this.disgusted = disgusted;
@@ -27,8 +24,6 @@ public class EmotionDay {
         this.sad = sad;
         this.surprised = surprised;
     }
-
-    public int getId() { return this.id; }
 
     public String getDate() { return this.date; }
 
@@ -46,8 +41,7 @@ public class EmotionDay {
 
     public String toString() {
         return "EmotionDay{" +
-                "id=" + Integer.toString(this.id) +
-                ", date='" + this.date + '\'' +
+                "date='" + this.date + '\'' +
                 ", emotions= { angry='" + Double.toString(this.angry) + '\'' +
                 ", disgusted='" + Double.toString(this.disgusted) + '\'' +
                 ", fearful='" + Double.toString(this.fearful) + '\'' +

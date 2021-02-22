@@ -40,24 +40,24 @@ public interface ZotdetectorRepository {
      * @param id     Retrieve Student information that matches the specified id
      * @return       Student that matches the filter
      */
-    Student getStudent(Integer id);
+    Map<String, Object> getStudent(Integer id);
 
     /**
      * API handler for emotional data
-     * /api/ret/allEmotions[?id=xxx[&duration=xxx]]
+     * /api/ret/all_emotions[?id=xxx[&duration=xxx]]
      *
      * @param id        Retrieve Emotion information that matches the specifed id
      * @param duration  Retrieve Emotion information within specifed duration
      * @return          List of EmotionDay that match the filters
      */
-    List<EmotionDay> getEmotions(Integer id, Integer duration);
+    Map<String, Object> getEmotions(Integer id, Integer duration);
 
     // --------------------------------------------------------
     // Database Admin endpoints - TAKE CAUTION BEFORE USING
     // --------------------------------------------------------
     /**
      * API handler to delete ALL local database records
-     * /api/deleteDatabase
+     * /api/delete_database
      *
      * @return
      */

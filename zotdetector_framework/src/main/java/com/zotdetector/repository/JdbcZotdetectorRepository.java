@@ -134,22 +134,30 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
             method = RequestMethod.GET
     )
     @Override
-    public Student getStudent(@RequestParam(required = false) Integer id) {
-        String sql = "SELECT id, email, name_first, name_last " +
-                "FROM Student " +
-                "WHERE id = ?";
-        return jdbcTemplate.query(connection -> {
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, id);
-            return stmt;
-        }, resultSet -> {
-            Student s;
-            if (resultSet.next()) {
-                return new Student(resultSet.getInt("id"), resultSet.getString("name_first"),
-                        resultSet.getString("name_last"), resultSet.getString("email"));
-            }
-            return new Student(-1, "", "", "");
-        });
+    public Map<String, Object> getStudent(@RequestParam(required = false) Integer id) {
+        Map<String, Object> json = new HashMap<String, Object>();
+        try {
+            String sql = "SELECT id, email, name_first, name_last " +
+                    "FROM Student " +
+                    "WHERE id = ?";
+            Student student = jdbcTemplate.query(connection -> {
+                PreparedStatement stmt = connection.prepareStatement(sql);
+                stmt.setInt(1, id);
+                return stmt;
+            }, resultSet -> {
+                if (resultSet.next()) {
+                    return new Student(resultSet.getInt("id"), resultSet.getString("name_first"),
+                            resultSet.getString("name_last"), resultSet.getString("email"));
+                }
+                return new Student(-1, "", "", "");
+            });
+            json.put("success", true);
+            json.put("student", student);
+        } catch (Exception e) {
+            json.put("success", false);
+            json.put("message", e.getMessage());
+        }
+        return json;
     }
 
     // Retrieve complete EmotionDay data from student id and duration
@@ -158,21 +166,32 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
             method = RequestMethod.GET
     )
     @Override
-    public List<EmotionDay> getEmotions(@RequestParam(required = false) Integer id, Integer duration) {
-        String sql = "SELECT date, angry, disgusted, fearful, happy, neutral, sad, surprised " +
-                "FROM Emotions " +
-                "WHERE id = ? AND date >= ADDDATE(CURDATE(), ?)";
-        return jdbcTemplate.query(connection -> {
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setInt(1, id);
-            stmt.setInt(2, duration * -1);
-            return stmt;
-        }, (resultSet, i) -> new EmotionDay(id, resultSet.getString("date"),
-                resultSet.getDouble("angry"), resultSet.getDouble("disgusted"),
-                resultSet.getDouble("fearful"), resultSet.getDouble("happy"),
-                resultSet.getDouble("neutral"), resultSet.getDouble("sad"),
-                resultSet.getDouble("surprised"))
-        );
+    public Map<String, Object> getEmotions(@RequestParam(required = false) Integer id, Integer duration) {
+        Map<String, Object> json = new HashMap<String, Object>();
+        try {
+            String sql = "SELECT date, angry, disgusted, fearful, happy, neutral, sad, surprised " +
+                    "FROM Emotions " +
+                    "WHERE id = ? AND date >= ADDDATE(CURDATE(), ?)";
+            List<EmotionDay> emotions = jdbcTemplate.query(connection -> {
+                PreparedStatement stmt = connection.prepareStatement(sql);
+                stmt.setInt(1, id);
+                stmt.setInt(2, duration * -1);
+                return stmt;
+            }, (resultSet, i) -> {
+                return new EmotionDay(resultSet.getString("date"),
+                        resultSet.getDouble("angry"), resultSet.getDouble("disgusted"),
+                        resultSet.getDouble("fearful"), resultSet.getDouble("happy"),
+                        resultSet.getDouble("neutral"), resultSet.getDouble("sad"),
+                        resultSet.getDouble("surprised"));
+            });
+            json.put("emotions", emotions);
+            json.put("id", id);
+            json.put("success", true);
+        } catch (Exception e) {
+            json.put("success", false);
+            json.put("message", e.getMessage());
+        }
+        return json;
     }
 
     // --------------------------------------------------------
