@@ -31,8 +31,7 @@
 /* Control the right side */
 .right {
   right: 0;
-  background-color: lightblue;
-
+  background-color: #cdedf7;
 }
 
 /*Positions the card */
@@ -40,4 +39,8 @@
   top: 100px;
   left: 200px;
 }
-  
+
+#chart-container {
+  position: absolute;
+  /*margin-top: 10%;*/
+}
