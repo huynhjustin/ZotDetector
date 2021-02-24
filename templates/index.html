@@ -3,6 +3,11 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <title>Zot Detector</title>
     <link rel="stylesheet" type= "text/css" href="{{ url_for('static',filename='styles/styles.css') }}">
+    <script type = "text/javascript" src = "https://www.gstatic.com/charts/loader.js">
+    </script>
+    <script type = "text/javascript">
+      google.charts.load('current', {packages: ['corechart']});
+    </script>
   </head>
   <body>
     <div class="header">
@@ -19,7 +24,7 @@
     </div>
 
     <div class="main-container">
-      <div class="split left">
+      <div class="split left" style="width: 40%">
         <div class="card border border-white" style="width: 20rem; height: 20rem">
           <img class="rounded-circle" src="{{ url_for('video_feed') }}">
           <br>
@@ -27,12 +32,52 @@
         </div>
       </div>
     
-      <div class="split right">
-        <p>Weekly Pattern</p>
-        <ul>
-          <li>{{sql_data}}</li>
-          <p>{{get_emotions_data}}</p>
-        </ul>
+      <div class="split right" style="width: 60%">
+        <p><b>Weekly Pattern</b><br>Track your emotional health for the week.</p>
+<!--        <ul>-->
+<!--          <li>{{sql_data}}</li>-->
+<!--          <p>{{get_emotions_data}}</p>-->
+<!--        </ul>-->
+<!--        <var>id="start date" value={{start_date}}</var>-->
+<!--        <var>id="end date" value={{end_date}}</var>-->
+        <div id = "chart-container">
+        <script language = "JavaScript">
+          // const start = document.getElementById("start date").value
+          // const end = document.getElementById("end date").value
+
+          function drawChart() {
+            // Define the chart to be drawn
+            // TODO: Get data from emotions_data in main.py intead of using canned data below
+            var data = google.visualization.arrayToDataTable([
+              ['Date', 'Angry', 'Disgusted', 'Fearful', 'Happy', 'Neutral', 'Sad', 'Surprised'],
+              ['Sunday',    10,      20,           30,        10,      0,        40,       0],
+              ['Monday',    25,      10,           0,         50,      5,        5,        5],
+              ['Tuesday',   0,       15,           10,        20,      10,       15,       30],
+              ['Wednesday', 5,       20,           30,        10,      5,        10,       20],
+              ['Thursday',  0,       0,            0,         0,       0,        0,        0],
+              ['Friday',    12,      20,           30,        10,      30,       40,       0],
+              ['Saturday',  14.3,    14.3,         14.3,      14.3,    14.3,     14.3,     14.3],
+            ]);
+
+            var options = {
+              title: "2/14 - 2/20",
+              isStacked:'percent',
+              legend: {position: 'right'},
+              height: 550,
+              width: '100%',
+              bar: {groupWidth: "80%"},
+              chartArea: {width: '70%', height: '90%'},
+              backgroundColor: "#cdedf7",
+              is3D: true,
+              colors: ["#A13D63", "#D8829D", "#FF9F1C", "#FFD700", "#FFFFFF", "#2660A4", "#66C7F4"]
+            };
+
+            // Instantiate and draw the chart
+            var chart = new google.visualization.ColumnChart(document.getElementById('chart-container'));
+            chart.draw(data, options);
+          }
+          google.charts.setOnLoadCallback(drawChart);
+        </script>
       </div>
 
     </div> 

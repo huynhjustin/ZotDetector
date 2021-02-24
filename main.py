@@ -1,6 +1,7 @@
 # Import packages
 from flask import Flask, render_template, Response, request, url_for, redirect
 from camera import VideoCamera
+from datetime import datetime, timedelta, date
 import requests
 import mysql.connector
 import json
@@ -25,17 +26,39 @@ for row in cursor:
     sql_data = sql_data + "</tr>"
 connection.close()
 
-# Emotion retrieval
-url = "http://localhost:8080/api/ret/all_emotions?id=837&duration=14" # GET request API URL for retrieving emotions
-r = requests.get(url = url) 
-    
-emotions_data = r.json() # JSON object with response (emotion data)
+# Emotions for current week for HTML
+def retrieve_weekly_emotions():
+    # Resulting emotions array used for summary
+    emotions_results = dict()
+    # Mapping from day number to day string
+    switch = {0: "Mon", 1: "Tues", 2: "Wed", 3: "Thurs", 4: "Fri", 5: "Sat", 6: "Sun"}
+    # GET request API URL for retrieving emotions
+    # TODO: Make dynamic to get id of student requesting
+#     id = 845
+    today = datetime.now()
+    start = today - timedelta(today.weekday())
+    end = start + timedelta(6)
+    duration = (today-start).days
+    url = "http://localhost:8080/api/ret/all_emotions?id=845&duration={duration}".format(duration=duration)
+    # Emotion data json
+    emotions = requests.get(url = url).json()["emotions"]
+    for emotion in emotions:
+        date = datetime.strptime(emotion["date"], '%Y-%m-%d')
+        day_num = datetime.combine(date, datetime.min.time()).weekday()
+        emotions_results[switch[day_num]] = emotion["emotions"]
+    return (start.date(), end.date(), emotions_results)
+
+url = "http://localhost:8080/api/ret/all_emotions?id=845&duration=7"
+emotions_data = requests.get(url = url).json()
 print(emotions_data)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    # Retrieve data for weekly chart
+    start, end, emotions = retrieve_weekly_emotions()
     # Render webpage
-    return render_template('index.html', content="[insert Name]", sql_data=sql_data_raw, get_emotions_data=emotions_data) #replace Dylan with Name
+    return render_template('index.html', content="[insert Name]", start_date=start, end_date=end, emotions_data=emotions)
+    #sql_data=sql_data_raw, get_emotions_data=emotions_data) #replace Dylan with Name
 
 @app.route('/statistics/')
 def statistics():
@@ -61,7 +84,7 @@ def generate(camera):
         headers = {'Content-Type': 'application/json'} # Define headers for input type
         emotions_dict = json.dumps(camera.emotions_count) # Create JSON string from emotions dictionary
         emotions_dict_loaded = json.loads(emotions_dict) # Load dictionary 
-        data_json = json.dumps({"id": 674, "date": "2021-02-07", "emotions": emotions_dict_loaded}) # Create body for POST request
+        data_json = json.dumps({"id": 845, "date": "2021-02-21", "emotions": emotions_dict_loaded}) # Create body for POST request
 
         x = requests.request("POST", url, headers=headers, data=data_json) # POST Request to input into database
         print(x.text) # Print response
@@ -77,7 +100,7 @@ def video_feed():
 @app.route('/hello')
 def hello():
     # api-endpoint 
-    URL = "http://localhost:8080/api/ret/student?id=476"
+    URL = "http://localhost:8080/api/ret/student?id=845"
     
     # defining a params dict for the parameters to be sent to the API 
     #PARAMS = {'address':location} 
