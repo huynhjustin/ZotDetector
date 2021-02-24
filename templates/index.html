@@ -40,40 +40,16 @@
     
       <div class="split right" style="width: 60%">
         <p><b>Weekly Pattern</b><br>Track your emotional health for the week.</p>
-<!--        <ul>-->
-<!--          <li>{{sql_data}}</li>-->
-<!--          <p>{{get_emotions_data}}</p>-->
-<!--        </ul>-->
-<!--        <var>id="start date" value={{start_date}}</var>-->
-<!--        <var>id="end date" value={{end_date}}</var>-->
         <div id = "chart-container">
         <script language = "JavaScript">
-          // const start = document.getElementById("start date").value
-          // const end = document.getElementById("end date").value
-          function myFunc(vars) {
-            return vars
-          }
-
           function drawChart() {
-            // Define the chart to be drawn
-            // TODO: Get data from emotions_data in main.py intead of using canned data below
-            var emotions = JSON.parse('{{emotions_data|tojson}}');
-            console.log(emotions);
-            console.log(typeof(emotions));
-            console.log(emotions["Mon"]["angry"]);
-            var data = google.visualization.arrayToDataTable([
-              ['Date', 'Angry', 'Disgusted', 'Fearful', 'Happy', 'Neutral', 'Sad', 'Surprised'],
-              ['Sunday',    10,      20,           30,        10,      0,        40,       0],
-              ['Monday',    emotions["Mon"]["angry"], emotions["Mon"]["disgusted"], emotions["Mon"]["fearful"], emotions["Mon"]["happy"], emotions["Mon"]["neutral"], emotions["Mon"]["sad"], emotions["Mon"]["surprised"]],
-              ['Tuesday',   0,       15,           10,        20,      10,       15,       30],
-              ['Wednesday', 5,       20,           30,        10,      5,        10,       20],
-              ['Thursday',  0,       0,            0,         0,       0,        0,        0],
-              ['Friday',    12,      20,           30,        10,      30,       40,       0],
-              ['Saturday',  14.3,    14.3,         14.3,      14.3,    14.3,     14.3,     14.3],
-            ]);
-
+            // Retrieve start and end of week, and weekly emotional data
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const emotions_data = JSON.parse('{{emotions_data|tojson}}');
+            const start = '{{start_date}}';
+            const end = '{{end_date}}';
             var options = {
-              title: "2/14 - 2/20",
+              title: start + " - " + end,
               isStacked:'percent',
               legend: {position: 'right'},
               height: 550,
@@ -84,6 +60,38 @@
               is3D: true,
               colors: ["#A13D63", "#D8829D", "#FF9F1C", "#FFD700", "#FFFFFF", "#2660A4", "#66C7F4"]
             };
+
+            // Change to true if want to use canned data
+            if (false) {
+              const data = google.visualization.arrayToDataTable([
+                ['Date', 'Angry', 'Disgusted', 'Fearful', 'Happy', 'Neutral', 'Sad', 'Surprised'],
+                ['Monday',    30,      10,           20,        35,      5,        17,       23],
+                ['Tuesday',   0,       15,           10,        20,      10,       15,       30],
+                ['Wednesday', 5,       20,           30,        10,      5,        10,       20],
+                ['Thursday',  0,       0,            0,         0,       0,        0,        0],
+                ['Friday',    12,      20,           30,        10,      30,       40,       0],
+                ['Saturday',  14.3,    14.3,         14.3,      14.3,    14.3,     14.3,     14.3],
+                ['Sunday',    10,      20,           30,        10,      0,        40,       0]
+              ]);
+              var chart = new google.visualization.ColumnChart(document.getElementById('chart-container'));
+              chart.draw(data, options);
+              return;
+            }
+
+            // Define the chart to be drawn
+            var rows =  [['Date', 'Angry', 'Disgusted', 'Fearful', 'Happy', 'Neutral', 'Sad', 'Surprised']];
+            // Iterate through days of week
+            for (var i = 0; i < days.length; i++) {
+              const day = days[i];
+              var row = [day];
+              // Iterate through types of emotions
+              for (var j = 1; j < rows[0].length; j++) {
+                const emotion = rows[0][j].toLowerCase();
+                row.push(emotions_data[day][emotion]);
+              }
+              rows.push(row);
+            }
+            var data = google.visualization.arrayToDataTable(rows);
 
             // Instantiate and draw the chart
             var chart = new google.visualization.ColumnChart(document.getElementById('chart-container'));
