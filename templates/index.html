@@ -50,14 +50,21 @@
         <script language = "JavaScript">
           // const start = document.getElementById("start date").value
           // const end = document.getElementById("end date").value
+          function myFunc(vars) {
+            return vars
+          }
 
           function drawChart() {
             // Define the chart to be drawn
             // TODO: Get data from emotions_data in main.py intead of using canned data below
+            var emotions = JSON.parse('{{emotions_data|tojson}}');
+            console.log(emotions);
+            console.log(typeof(emotions));
+            console.log(emotions["Mon"]["angry"]);
             var data = google.visualization.arrayToDataTable([
               ['Date', 'Angry', 'Disgusted', 'Fearful', 'Happy', 'Neutral', 'Sad', 'Surprised'],
               ['Sunday',    10,      20,           30,        10,      0,        40,       0],
-              ['Monday',    25,      10,           0,         50,      5,        5,        5],
+              ['Monday',    emotions["Mon"]["angry"], emotions["Mon"]["disgusted"], emotions["Mon"]["fearful"], emotions["Mon"]["happy"], emotions["Mon"]["neutral"], emotions["Mon"]["sad"], emotions["Mon"]["surprised"]],
               ['Tuesday',   0,       15,           10,        20,      10,       15,       30],
               ['Wednesday', 5,       20,           30,        10,      5,        10,       20],
               ['Thursday',  0,       0,            0,         0,       0,        0,        0],

@@ -39,18 +39,19 @@ def retrieve_weekly_emotions():
     start = today - timedelta(today.weekday())
     end = start + timedelta(6)
     duration = (today-start).days
-    url = "http://localhost:8080/api/ret/all_emotions?id=845&duration={duration}".format(duration=duration)
+    url = "http://localhost:8080/api/ret/all_emotions?id=837&duration={duration}".format(duration=duration)
     # Emotion data json
     emotions = requests.get(url = url).json()["emotions"]
+    print(emotions)
     for emotion in emotions:
         date = datetime.strptime(emotion["date"], '%Y-%m-%d')
         day_num = datetime.combine(date, datetime.min.time()).weekday()
         emotions_results[switch[day_num]] = emotion["emotions"]
     return (start.date(), end.date(), emotions_results)
 
-url = "http://localhost:8080/api/ret/all_emotions?id=845&duration=7"
-emotions_data = requests.get(url = url).json()
-print(emotions_data)
+#url = "http://localhost:8080/api/ret/all_emotions?id=845&duration=7"
+#emotions_data = requests.get(url = url).json()
+#print(emotions_data)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -75,16 +76,16 @@ def generate(camera):
     emotions_sum = sum(camera.emotions_count.values())
     #print(emotions_sum)
     if emotions_sum > 0:
-        for i in camera.emotions_count:
-            camera.emotions_count[i] = (camera.emotions_count[i]*100.0)/emotions_sum
-        print(camera.emotions_count)
+        #for i in camera.emotions_count:
+        #    camera.emotions_count[i] = (camera.emotions_count[i]*100.0)/emotions_sum
+        #print(camera.emotions_count)
 
         # Put it into the database here
         url = 'http://localhost:8080/api/data/emotion' # Define API url
         headers = {'Content-Type': 'application/json'} # Define headers for input type
         emotions_dict = json.dumps(camera.emotions_count) # Create JSON string from emotions dictionary
         emotions_dict_loaded = json.loads(emotions_dict) # Load dictionary 
-        data_json = json.dumps({"id": 845, "date": "2021-02-21", "emotions": emotions_dict_loaded}) # Create body for POST request
+        data_json = json.dumps({"id": 837, "date": "2021-02-22", "emotions": emotions_dict_loaded}) # Create body for POST request
 
         x = requests.request("POST", url, headers=headers, data=data_json) # POST Request to input into database
         print(x.text) # Print response
