@@ -131,6 +131,20 @@ def change_button_flag():
     button_flag = not button_flag
     return redirect(url_for('index'))
 
+@app.route('/register-user', methods=['GET', 'POST'])
+def register():
+    name = request.form['name']
+    email = request.form['email']
+
+    # Put user into database
+    url = 'http://localhost:8080/api/data/student' # Define API url
+    headers = {'Content-Type': 'application/json'} # Define headers for input type
+    data_json = json.dumps({"name": name, "email": email}) # Create body for POST request
+
+    x = requests.request("POST", url, headers=headers, data=data_json) # POST Request to input into database
+    print(x.text) # Print response
+
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     # Set server address and port (localhost:5000)
