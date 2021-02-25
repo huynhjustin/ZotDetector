@@ -11,13 +11,12 @@
   </head>
   <body>
     <div class="header">
-      <p><span id="zot">Zot</span><span id="detector">Detector</span><span style="float:right;">Good morning, <span contentEditable="true"><strong>{{content}}</strong></span></span></p>
+      <p><span id="zot">Zot</span><span id="detector">Detector</span><span style="float:right;">Good morning, <span contentEditable="true"><strong>{{name}}</strong></span></span></p>
       
       <div class = "Page_labels">
         <nav>
-            <ul>
-                <a href="{{  url_for('disclaimer') }}">Disclaimer</a>
-            </ul>
+                <a href="{{  url_for('disclaimer') }}" style="color:black">Disclaimer</a>
+                <a href="{{  url_for('registered') }}" style="color:black">Registered Users</a>
         </nav>
       </div>
     </div>
@@ -35,7 +34,7 @@
           <br>
           <form action="/record-button" method="POST">
               <input type="text" placeholder="ID Number" name="id">
-              <input type="submit" value="Start/Stop Recording">
+              <input type="submit" value="{{button}}">
           </form>
         </div>
       </div>

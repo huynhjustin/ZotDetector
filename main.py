@@ -11,7 +11,12 @@ import json
 app = Flask(__name__)
 
 button_flag = False
+button_text = "Start Recording"
 id = 837 # Default ID number
+
+url = "http://localhost:8080/api/ret/student?id={id}".format(id=id)
+user_info = requests.get(url = url).json()["student"]
+name = user_info['firstName']
 
 # Connect to local mySQL database and extract table
 connection = mysql.connector.connect(user='root', password='password', database='zotdetectordb')
@@ -19,6 +24,7 @@ cursor = connection.cursor()
 cursor.execute("SELECT * FROM student") # Run this query
 #rows = cursor.fetchall()
 sql_data = "<table style='border:1px solid red'>"
+sql_data = sql_data + "<tr><td>ID</td><td>Email</td><td>First Name</td><td>Last Name</td></tr>"
 sql_data_raw = []
 for row in cursor:
     sql_data = sql_data + "<tr>"
@@ -26,6 +32,8 @@ for row in cursor:
         sql_data = sql_data + "<td>" + str(i) + "</td>"
         sql_data_raw.append(i)
     sql_data = sql_data + "</tr>"
+
+print(sql_data)
 connection.close()
 
 # Emotions for current week for HTML
@@ -59,7 +67,7 @@ def index():
     # Retrieve data for weekly chart
     start, end, emotions = retrieve_weekly_emotions()
     # Render webpage
-    return render_template('index.html', content="[insert Name]", start_date=start, end_date=end, emotions_data=emotions)
+    return render_template('index.html', name=name, start_date=start, end_date=end, emotions_data=emotions, sql_data=sql_data_raw, button=button_text)
 
 def generate(camera):
     while button_flag:
@@ -96,16 +104,29 @@ def disclaimer():
     elif request.method == 'GET':
         return render_template("disclaimer.html")
 
+@app.route('/registered')
+def registered():    
+    return "<html><body>" + sql_data + "</body></html>"
+
 @app.route('/record-button', methods=['GET', 'POST'])
 def change_button_flag():
     global button_flag
+    global button_text
     global id
+    global name
     button_flag = not button_flag
+    if button_text == "Start Recording":
+        button_text = "Stop Recording"
+    else:
+        button_text = "Start Recording"
     
     # ID change
     id_form = request.form['id'] # Retrieve ID from form on frontend
     if len(id_form) > 0 and id_form.isdigit():  # If a value was entered and it was a number, set the id value to this value
         id = int(id_form)
+        url = "http://localhost:8080/api/ret/student?id={id}".format(id=id)
+        user_info = requests.get(url = url).json()["student"]
+        name = user_info['firstName']
     return redirect(url_for('index'))
 
 @app.route('/register-user', methods=['GET', 'POST'])
