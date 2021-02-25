@@ -41,7 +41,7 @@ def retrieve_weekly_emotions():
     start = today - timedelta(today.weekday())
     end = start + timedelta(6)
     duration = (today-start).days
-    url = "http://localhost:8080/api/ret/all_emotions?id=845&duration={duration}".format(duration=duration)
+    url = "http://localhost:8080/api/ret/all_emotions?id=837&duration={duration}".format(duration=duration)
     # Emotion data json
     emotions = requests.get(url = url).json()["emotions"]
     for emotion in emotions:
@@ -79,7 +79,8 @@ def generate(camera):
         headers = {'Content-Type': 'application/json'} # Define headers for input type
         emotions_dict = json.dumps(camera.emotions_count) # Create JSON string from emotions dictionary
         emotions_dict_loaded = json.loads(emotions_dict)  # Load dictionary
-        data_json = json.dumps({"id": 837, "date": "2021-02-22", "emotions": emotions_dict_loaded}) # Create body for POST request
+        today = datetime.now().strftime('%Y-%m-%d') # Get current day
+        data_json = json.dumps({"id": 837, "date": today, "emotions": emotions_dict_loaded}) # Create body for POST request
         x = requests.request("POST", url, headers=headers, data=data_json) # POST Request to input into database
         print(x.text) # Print response
 # EOF #
