@@ -11,6 +11,7 @@ import json
 app = Flask(__name__)
 
 button_flag = False
+id = 837 # Default ID number
 
 # Connect to local mySQL database and extract table
 connection = mysql.connector.connect(user='root', password='password', database='zotdetectordb')
@@ -36,12 +37,12 @@ def retrieve_weekly_emotions():
     default_emotions = {"angry": 0, "disgusted": 0, "fearful": 0, "happy": 0, "neutral": 0, "sad": 0, "surprised": 0}
     # GET request API URL for retrieving emotions
     # TODO: Make dynamic to get id of student requesting
-    id = 845
+    #id = 845
     today = datetime.now()
     start = today - timedelta(today.weekday())
     end = start + timedelta(6)
     duration = (today-start).days
-    url = "http://localhost:8080/api/ret/all_emotions?id=837&duration={duration}".format(duration=duration)
+    url = "http://localhost:8080/api/ret/all_emotions?id={id}&duration={duration}".format(id=id, duration=duration)
     # Emotion data json
     emotions = requests.get(url = url).json()["emotions"]
     for emotion in emotions:
@@ -60,11 +61,6 @@ def index():
     # Render webpage
     return render_template('index.html', content="[insert Name]", start_date=start, end_date=end, emotions_data=emotions)
 
-@app.route('/statistics/')
-def statistics():
-    return render_template('statistics.html') 
-# EOF #
-
 def generate(camera):
     while button_flag:
         # Get camera frame
@@ -80,7 +76,7 @@ def generate(camera):
         emotions_dict = json.dumps(camera.emotions_count) # Create JSON string from emotions dictionary
         emotions_dict_loaded = json.loads(emotions_dict)  # Load dictionary
         today = datetime.now().strftime('%Y-%m-%d') # Get current day
-        data_json = json.dumps({"id": 837, "date": today, "emotions": emotions_dict_loaded}) # Create body for POST request
+        data_json = json.dumps({"id": id, "date": today, "emotions": emotions_dict_loaded}) # Create body for POST request
         x = requests.request("POST", url, headers=headers, data=data_json) # POST Request to input into database
         print(x.text) # Print response
 # EOF #
@@ -92,17 +88,6 @@ def video_feed():
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 # EOF #
 
-@app.route('/hello')
-def hello():
-    # api-endpoint 
-    URL = "http://localhost:8080/api/ret/student?id=845"
-    # sending get request and saving the response as response object 
-    r = requests.get(url = URL)
-    # extracting data in json format 
-    data = r.json() 
-    print(data)
-    return r.content
-
 @app.route('/disclaimer', methods=['GET', 'POST'])
 def disclaimer():
     if request.method == 'POST':
@@ -111,15 +96,16 @@ def disclaimer():
     elif request.method == 'GET':
         return render_template("disclaimer.html")
 
-# At this address, display table from mySQL query
-@app.route('/sqltest')
-def sqltest():
-    return "<html><body>" + sql_data + "</body></html>" # Return with HTML tags
-
-@app.route('/your_flask_function')
+@app.route('/record-button', methods=['GET', 'POST'])
 def change_button_flag():
     global button_flag
+    global id
     button_flag = not button_flag
+    
+    # ID change
+    id_form = request.form['id'] # Retrieve ID from form on frontend
+    if len(id_form) > 0 and id_form.isdigit():  # If a value was entered and it was a number, set the id value to this value
+        id = int(id_form)
     return redirect(url_for('index'))
 
 @app.route('/register-user', methods=['GET', 'POST'])

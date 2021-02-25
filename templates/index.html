@@ -16,8 +16,7 @@
       <div class = "Page_labels">
         <nav>
             <ul>
-                <a href="{{  url_for('index') }}">Home</a>
-                <a href="{{  url_for('statistics') }}">Statistics</a>
+                <a href="{{  url_for('disclaimer') }}">Disclaimer</a>
             </ul>
         </nav>
       </div>
@@ -34,7 +33,10 @@
         <div class="card border border-white" style="width: 20rem; height: 20rem">
           <img class="rounded-circle" src="{{ url_for('video_feed') }}">
           <br>
-          <a href="/your_flask_function"><input type="button" value="Start/Stop"></a>
+          <form action="/record-button" method="POST">
+              <input type="text" placeholder="ID Number" name="id">
+              <input type="submit" value="Start/Stop Recording">
+          </form>
         </div>
       </div>
     
