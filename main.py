@@ -14,6 +14,7 @@ button_flag = False
 button_text = "Start Recording"
 id = 837 # Default ID number
 
+# Retrieve first name from default ID number
 url = "http://localhost:8080/api/ret/student?id={id}".format(id=id)
 user_info = requests.get(url = url).json()["student"]
 name = user_info['firstName']
@@ -115,6 +116,8 @@ def change_button_flag():
     global id
     global name
     button_flag = not button_flag
+
+    # Change text for start/stop recording button
     if button_text == "Start Recording":
         button_text = "Stop Recording"
     else:
