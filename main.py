@@ -57,6 +57,7 @@ def generate(camera):
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
     emotions_sum = sum(camera.emotions_count.values())
+    print(camera.emotions_count.values())
     if emotions_sum > 0:
         # Put it into the database here
         url = 'http://localhost:8080/api/data/emotion' # Define API url

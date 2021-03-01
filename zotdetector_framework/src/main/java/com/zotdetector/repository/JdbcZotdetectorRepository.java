@@ -62,8 +62,6 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
             if (name.length != 2){
             	throw new IllegalArgumentException("Name fields cannot be empty. Correct format is - FIRSTNAME LASTNAME ");
             }
-            
-            String email = (String) payload.get("email");
 
             if (email.length() == 0){
             	throw new IllegalArgumentException("Email field is required. Correct format is - example@example.com");
