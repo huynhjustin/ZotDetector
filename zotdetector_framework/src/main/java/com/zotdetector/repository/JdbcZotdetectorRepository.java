@@ -58,37 +58,37 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
             }
             
             String email = (String) payload.get("email");
+            
+            if (name.length != 2){
+            	throw new IllegalArgumentException("Name fields cannot be empty. Correct format is - FIRSTNAME LASTNAME ");
+            }
+            
+            String email = (String) payload.get("email");
 
             if (email.length() == 0){
-            	throw new IllegalArgumentException("Error: Email field is required. Correct format is - example@example.com");
+            	throw new IllegalArgumentException("Email field is required. Correct format is - example@example.com");
             }
 
             if (email.contains("@") == false){
-            	throw new IllegalArgumentException("Error: @ symbol required in email field. Correct format is - example@example.com");
+            	throw new IllegalArgumentException("@ symbol required in email field. Correct format is - example@example.com");
             }
 
             String[] emailvalidation = (email.split("@"));
             String[] emailAccount = (emailvalidation[1].split("\\."));
             switch (emailAccount[0]) {
-            	case "gmail": 
-            		break;
-            	case "yahoo":
-            		break;
-            	case "uci":
-            		break;
+            	case "gmail": break;
+            	case "yahoo": break;
+            	case "uci": break;
             	default:
-            		throw new IllegalArgumentException("Error: Only emails from gmail, yahoo, uci are accepted. Correct format is - example@example.com");
+            		throw new IllegalArgumentException("Only emails from gmail, yahoo, uci are accepted. Correct format is - example@example.com");
             }
 
             switch (emailAccount[1]) {
-            	case "com": 
-            		break;
-            	case "edu":
-            		break;
+            	case "com": break;
+            	case "edu": break;
             	default:
-            		throw new IllegalArgumentException("Error: Email domain should be .com or .edu. Correct format is - example@example.com");
+            		throw new IllegalArgumentException("Email domain should be .com or .edu. Correct format is - example@example.com");
             }
-
 
             Random rand = new Random();
             Integer id = rand.nextInt(1000);
@@ -165,21 +165,28 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
     // --------------------------------------------------------
     // Data retrieval endpoints
     // --------------------------------------------------------
-    // Retrieve Student data from student id
+    // Retrieve Student data from student id or email
     @RequestMapping(
             value = "api/ret/student",
             method = RequestMethod.GET
     )
     @Override
-    public Map<String, Object> getStudent(@RequestParam(required = false) Integer id) {
+    public Map<String, Object> getStudent(@RequestParam(required = false) Integer id,
+                                          @RequestParam(required = false) String email) {
         Map<String, Object> json = new HashMap<String, Object>();
         try {
+            String idClause = (id != null) ? "id = ? " : "";
+            String emailClause = (email != null) ? "email = ? " : "";
+            String separator = (id != null && email != null) ? "AND " : "";
+
             String sql = "SELECT id, email, name_first, name_last " +
-                    "FROM Student " +
-                    "WHERE id = ?";
+                    "FROM Student WHERE " + idClause + separator + emailClause;
             Student student = jdbcTemplate.query(connection -> {
                 PreparedStatement stmt = connection.prepareStatement(sql);
-                stmt.setInt(1, id);
+                if (id != null) {
+                    stmt.setInt(1, id);
+                    if (email != null) stmt.setString(2, email);
+                } else if (email != null) stmt.setString(1, email);
                 return stmt;
             }, resultSet -> {
                 if (resultSet.next()) {

@@ -11,29 +11,22 @@
   </head>
   <body>
     <div class="header">
-      <p><span id="zot">Zot</span><span id="detector">Detector</span><span style="float:right;">Good morning, <span contentEditable="true"><strong>{{name}}</strong></span></span></p>
-      
+      <p><span id="zot">Zot</span><span id="detector">Detector</span><span style="float:right;">Hello, <span contentEditable="true"><strong>{{name}}</strong></span></span></p>
+      <button onclick="location.href = '/logout';" style="float:right;">Logout</button>
       <div class = "Page_labels">
         <nav>
-                <a href="{{  url_for('disclaimer') }}" style="color:black">Disclaimer</a>
-                <a href="{{  url_for('registered') }}" style="color:black">Registered Users</a>
+            <a href="{{  url_for('disclaimer') }}" style="color:black">Disclaimer</a>
+            <a href="{{  url_for('how_to') }}" style="color:black">How to Use</a>
         </nav>
       </div>
     </div>
 
     <div class="main-container">
-      <p><b>Register User</b></p>
-      <form action="/register-user" method="POST">
-        <input type="text" placeholder="First and Last Name" name="name">
-        <input type="text" placeholder="Email" name ="email">
-        <input type="submit" value="Go">
-      </form>
       <div class="split left" style="width: 40%">
         <div class="card border border-white" style="width: 20rem; height: 20rem">
           <img class="rounded-circle" src="{{ url_for('video_feed') }}">
           <br>
           <form action="/record-button" method="POST">
-              <input type="text" placeholder="ID Number" name="id">
               <input type="submit" value="{{button}}">
           </form>
         </div>
@@ -54,9 +47,10 @@
               isStacked:'percent',
               legend: {position: 'right'},
               height: 550,
-              width: '100%',
+              width: 700,
               bar: {groupWidth: "80%"},
-              chartArea: {width: '70%', height: '90%'},
+              chartArea: {width: '70%', height: '80%'},
+              vAxis: { minValue: 0 },
               backgroundColor: "#cdedf7",
               is3D: true,
               colors: ["#A13D63", "#D8829D", "#FF9F1C", "#FFD700", "#FFFFFF", "#2660A4", "#66C7F4"]

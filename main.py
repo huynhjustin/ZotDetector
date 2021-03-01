@@ -12,30 +12,8 @@ app = Flask(__name__)
 
 button_flag = False
 button_text = "Start Recording"
-id = 837 # Default ID number
-
-# Retrieve first name from default ID number
-url = "http://localhost:8080/api/ret/student?id={id}".format(id=id)
-user_info = requests.get(url = url).json()["student"]
-name = user_info['firstName']
-
-# Connect to local mySQL database and extract table
-connection = mysql.connector.connect(user='root', password='password', database='zotdetectordb')
-cursor = connection.cursor()
-cursor.execute("SELECT * FROM student") # Run this query
-#rows = cursor.fetchall()
-sql_data = "<table style='border:1px solid red'>"
-sql_data = sql_data + "<tr><td>ID</td><td>Email</td><td>First Name</td><td>Last Name</td></tr>"
-sql_data_raw = []
-for row in cursor:
-    sql_data = sql_data + "<tr>"
-    for i in row:
-        sql_data = sql_data + "<td>" + str(i) + "</td>"
-        sql_data_raw.append(i)
-    sql_data = sql_data + "</tr>"
-
-print(sql_data)
-connection.close()
+id = None
+logged_in = False
 
 # Emotions for current week for HTML
 def retrieve_weekly_emotions():
@@ -45,8 +23,6 @@ def retrieve_weekly_emotions():
     days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     default_emotions = {"angry": 0, "disgusted": 0, "fearful": 0, "happy": 0, "neutral": 0, "sad": 0, "surprised": 0}
     # GET request API URL for retrieving emotions
-    # TODO: Make dynamic to get id of student requesting
-    #id = 845
     today = datetime.now()
     start = today - timedelta(today.weekday())
     end = start + timedelta(6)
@@ -65,10 +41,14 @@ def retrieve_weekly_emotions():
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    # Retrieve data for weekly chart
-    start, end, emotions = retrieve_weekly_emotions()
-    # Render webpage
-    return render_template('index.html', name=name, start_date=start, end_date=end, emotions_data=emotions, sql_data=sql_data_raw, button=button_text)
+    # Check if user already logged in
+    if logged_in:
+        # Retrieve data for weekly chart
+        start, end, emotions = retrieve_weekly_emotions()
+        # Render webpage
+        return render_template('index.html', name=name, start_date=start, end_date=end, emotions_data=emotions, button=button_text)
+    # If not logged in then redirect to login page
+    else: return render_template('login.html')
 
 def generate(camera):
     while button_flag:
@@ -76,7 +56,6 @@ def generate(camera):
         frame = camera.get_frame()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-    
     emotions_sum = sum(camera.emotions_count.values())
     if emotions_sum > 0:
         # Put it into the database here
@@ -88,15 +67,25 @@ def generate(camera):
         data_json = json.dumps({"id": id, "date": today, "emotions": emotions_dict_loaded}) # Create body for POST request
         x = requests.request("POST", url, headers=headers, data=data_json) # POST Request to input into database
         print(x.text) # Print response
-# EOF #
 
 # Video feed for HTML
 @app.route('/video_feed')
 def video_feed():
     return Response(generate(VideoCamera()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
-# EOF #
 
+@app.route('/record-button', methods=['GET', 'POST'])
+def change_button_flag():
+    global button_flag
+    global button_text
+    button_flag = not button_flag
+
+    # Change text for start/stop recording button
+    if button_text == "Start Recording": button_text = "Stop Recording"
+    else: button_text = "Start Recording"
+    return redirect(url_for('index'))
+
+# Disclaimer route for HTML
 @app.route('/disclaimer', methods=['GET', 'POST'])
 def disclaimer():
     if request.method == 'POST':
@@ -105,47 +94,73 @@ def disclaimer():
     elif request.method == 'GET':
         return render_template("disclaimer.html")
 
-@app.route('/registered')
-def registered():    
-    return "<html><body>" + sql_data + "</body></html>"
+# How to Use route for HTML
+@app.route('/how_to', methods=['GET', 'POST'])
+def how_to():
+    if request.method == 'POST':
+        if request.form['submit_button'] == 'OK':
+            return redirect(url_for('index'))
+    elif request.method == 'GET':
+        return render_template("howto.html")
 
-@app.route('/record-button', methods=['GET', 'POST'])
-def change_button_flag():
-    global button_flag
-    global button_text
+# Register new user for HTML
+@app.route('/register', methods=['GET', 'POST'])
+def register():
     global id
     global name
-    button_flag = not button_flag
+    global logged_in
+    error = None
 
-    # Change text for start/stop recording button
-    if button_text == "Start Recording":
-        button_text = "Stop Recording"
-    else:
-        button_text = "Start Recording"
-    
-    # ID change
-    id_form = request.form['id'] # Retrieve ID from form on frontend
-    if len(id_form) > 0 and id_form.isdigit():  # If a value was entered and it was a number, set the id value to this value
-        id = int(id_form)
-        url = "http://localhost:8080/api/ret/student?id={id}".format(id=id)
-        user_info = requests.get(url = url).json()["student"]
-        name = user_info['firstName']
-    return redirect(url_for('index'))
+    if request.method == "POST":
+        # Get Student information
+        first_name = request.form['first-name']
+        last_name = request.form['last-name']
+        email = request.form['email']
 
-@app.route('/register-user', methods=['GET', 'POST'])
-def register():
-    name = request.form['name']
-    email = request.form['email']
+        # Put user into database
+        url = 'http://localhost:8080/api/data/student' # Define API url
+        headers = {'Content-Type': 'application/json'} # Define headers for input type
+        data_json = json.dumps({"name": first_name + " " + last_name, "email": email})   # Create body for POST request
+        response = requests.request("POST", url, headers=headers, data=data_json).json() # POST Request to input into database
+        # Verify if any errors
+        if (response["success"]):
+            id = response["id"]
+            name = first_name
+            logged_in = True
+            print(id)
+            return redirect(url_for('index'))
+        else: error = response["message"]
+    return render_template('register.html', error=error)
 
-    # Put user into database
-    url = 'http://localhost:8080/api/data/student' # Define API url
-    headers = {'Content-Type': 'application/json'} # Define headers for input type
-    data_json = json.dumps({"name": name, "email": email}) # Create body for POST request
+# Login for HTML
+@app.route('/login', methods=['GET','POST'])
+def login():
+    global id
+    global name
+    global logged_in
+    error = None
 
-    x = requests.request("POST", url, headers=headers, data=data_json) # POST Request to input into database
-    print(x.text) # Print response
+    if request.method == "POST":
+        # Get Student record with email
+        email = request.form.get('email','')
+        url = 'http://localhost:8080/api/ret/student?email={email}'.format(email=email)
+        response = requests.get(url = url).json()
+        print(response)
+        # Verify if Student record exists
+        if (response["success"] and response["student"]["id"] != -1):
+            id = response["student"]["id"]
+            name = response["student"]["firstName"]
+            logged_in = True
+            return redirect(url_for('index'))
+        else: error = 'Invalid Credentials. Please try again.'
+    return render_template('login.html', error=error)
 
-    return redirect(url_for('index'))
+# Logout for HTML
+@app.route("/logout")
+def logout():
+    global logged_in
+    logged_in = False
+    return index()
 
 if __name__ == '__main__':
     # Set server address and port (localhost:5000)
