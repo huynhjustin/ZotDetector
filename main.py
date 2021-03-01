@@ -94,6 +94,15 @@ def disclaimer():
     elif request.method == 'GET':
         return render_template("disclaimer.html")
 
+# How to Use route for HTML
+@app.route('/how_to', methods=['GET', 'POST'])
+def how_to():
+    if request.method == 'POST':
+        if request.form['submit_button'] == 'OK':
+            return redirect(url_for('index'))
+    elif request.method == 'GET':
+        return render_template("howto.html")
+
 # Register new user for HTML
 @app.route('/register', methods=['GET', 'POST'])
 def register():
