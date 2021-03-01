@@ -1,0 +1,29 @@
+<html>
+<head>
+    <title>Create New Account</title>
+    <link rel="stylesheet" type= "text/css" href="{{ url_for('static',filename='styles/styles.css') }}">
+</head>
+<body>
+<h1>Welcome to ZotDetector</h1>
+<p>Start monitoring your mental health by creating an account in below</p>
+<form action="/register" method="POST">
+    <label for="first-name">First Name:</label>
+    <input type="text" id="first-name" name ="first-name" required="required" value="{{
+          request.form.first_name }}">
+    <label for="last-name">Last Name:</label>
+    <input type="text" id="last-name" name="last-name" required="required" value="{{
+          request.form.last_name }}"><br>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required="required" value="{{
+          request.form.email }}"><br>
+    <label for="password">Password:</label><br>
+    <input type="password" id="password" name="password" required="required" value="{{
+          request.form.password }}"><br>
+    <input type="submit" value="Sign Up">
+    <input type="reset">
+</form>
+{% if error %}
+<p class="error"><strong>Error:</strong> {{ error }}
+    {% endif %}
+</body>
+</html>

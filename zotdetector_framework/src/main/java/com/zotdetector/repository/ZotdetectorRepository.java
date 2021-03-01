@@ -35,12 +35,13 @@ public interface ZotdetectorRepository {
     // --------------------------------------------------------
     /**
      * API handler for student data
-     * /api/ret/student[?id=xxx]
+     * /api/ret/student[?id=xxx][&email=xxx]
      *
      * @param id     Retrieve Student information that matches the specified id
+     * @param email  Retrieve Student information that matches the specified email
      * @return       Student that matches the filter
      */
-    Map<String, Object> getStudent(Integer id);
+    Map<String, Object> getStudent(Integer id, String email);
 
     /**
      * API handler for emotional data

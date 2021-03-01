@@ -128,21 +128,28 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
     // --------------------------------------------------------
     // Data retrieval endpoints
     // --------------------------------------------------------
-    // Retrieve Student data from student id
+    // Retrieve Student data from student id or email
     @RequestMapping(
             value = "api/ret/student",
             method = RequestMethod.GET
     )
     @Override
-    public Map<String, Object> getStudent(@RequestParam(required = false) Integer id) {
+    public Map<String, Object> getStudent(@RequestParam(required = false) Integer id,
+                                          @RequestParam(required = false) String email) {
         Map<String, Object> json = new HashMap<String, Object>();
         try {
+            String idClause = (id != null) ? "id = ? " : "";
+            String emailClause = (email != null) ? "email = ? " : "";
+            String separator = (id != null && email != null) ? "AND " : "";
+
             String sql = "SELECT id, email, name_first, name_last " +
-                    "FROM Student " +
-                    "WHERE id = ?";
+                    "FROM Student WHERE " + idClause + separator + emailClause;
             Student student = jdbcTemplate.query(connection -> {
                 PreparedStatement stmt = connection.prepareStatement(sql);
-                stmt.setInt(1, id);
+                if (id != null) {
+                    stmt.setInt(1, id);
+                    if (email != null) stmt.setString(2, email);
+                } else if (email != null) stmt.setString(1, email);
                 return stmt;
             }, resultSet -> {
                 if (resultSet.next()) {
