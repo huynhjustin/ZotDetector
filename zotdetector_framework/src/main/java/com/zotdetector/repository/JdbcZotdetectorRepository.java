@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.lang.String;
 
 @RestController
 @Repository
@@ -52,6 +53,10 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
         Map<String, Object> json = new HashMap<String, Object>();
         try {
             String[] name = ((String) payload.get("name")).split(" ");
+            if (name.length != 2){
+            	throw new IllegalArgumentException("Error: Name fields cannot be empty. Correct format is - FIRSTNAME LASTNAME ");
+            }
+            
             String email = (String) payload.get("email");
             
             if (name.length != 2){
@@ -71,21 +76,16 @@ public class JdbcZotdetectorRepository implements ZotdetectorRepository {
             String[] emailvalidation = (email.split("@"));
             String[] emailAccount = (emailvalidation[1].split("\\."));
             switch (emailAccount[0]) {
-            	case "gmail": 
-            		break;
-            	case "yahoo":
-            		break;
-            	case "uci":
-            		break;
+            	case "gmail": break;
+            	case "yahoo": break;
+            	case "uci": break;
             	default:
             		throw new IllegalArgumentException("Only emails from gmail, yahoo, uci are accepted. Correct format is - example@example.com");
             }
 
             switch (emailAccount[1]) {
-            	case "com": 
-            		break;
-            	case "edu":
-            		break;
+            	case "com": break;
+            	case "edu": break;
             	default:
             		throw new IllegalArgumentException("Email domain should be .com or .edu. Correct format is - example@example.com");
             }
