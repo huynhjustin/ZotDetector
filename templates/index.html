@@ -9,93 +9,107 @@
       google.charts.load('current', {packages: ['corechart']});
     </script>
   </head>
-  <body>
+  <body class="background">
     <div class="header">
-      <p><span id="zot">Zot</span><span id="detector">Detector</span><span style="float:right;">Hello, <span contentEditable="true"><strong>{{name}}</strong></span></span></p>
-      <button onclick="location.href = '/logout';" style="float:right;">Logout</button>
-      <div class = "Page_labels">
-        <nav>
-            <a href="{{  url_for('disclaimer') }}" style="color:black">Disclaimer</a>
-            <a href="{{  url_for('how_to') }}" style="color:black">How to Use</a>
-        </nav>
-      </div>
+      <p>
+        <span id="zot"><strong>Zot</span><span id="detector">Detector</strong>
+          <a href="{{  url_for('disclaimer') }}" class="page-labels">Disclaimer</a>
+          <a href="{{  url_for('how_to') }}" class="page-labels">How to Use</a>
+        </span>
+        <span style="float:right;">
+          Hello, <span contentEditable="true"><strong>{{name}}  </strong></span>
+          <button onclick="location.href = '/logout';" style="float:right;" class="btn btn-primary btn-sm logout">Logout</button>
+        </span>
+      </p>
     </div>
 
-    <div class="main-container">
-      <div class="split left" style="width: 40%">
-        <div class="card border border-white" style="width: 20rem; height: 20rem">
-          <img class="rounded-circle" src="{{ url_for('video_feed') }}">
-          <br>
-          <form action="/record-button" method="POST">
-              <input type="submit" value="{{button}}">
-          </form>
+    <div class="container-xxl">
+      
+      <div class="row">
+        <div class ="col-sm-5 interface-card-left">
+          <div class="card text-center card-border">
+            <div class="card-body">
+              <h5 class="card-title">Face Detection</h5>
+              <div class="card-left-content">
+                <img class="rounded-circle" src="{{ url_for('video_feed') }}">
+                <br>
+                <form action="/record-button" method="POST">
+                  <input type="submit" class="btn btn-primary start-button" value="{{button}}">
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6 interface-card-right">
+          <div class="card text-center card-border">
+            <div class="card-body">
+              <h5 class="card-title">Weekly Pattern</h5>
+              <p class="card-text">Track your emotional health for the week.</p>
+              <div id = "chart-container">
+                <script language = "JavaScript">
+                  function drawChart() {
+                    // Retrieve start and end of week, and weekly emotional data
+                    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                    const emotions_data = JSON.parse('{{emotions_data|tojson}}');
+                    const start = '{{start_date}}';
+                    const end = '{{end_date}}';
+                    var options = {
+                      title: start + " - " + end,
+                      isStacked:'percent',
+                      legend: {position: 'right'},
+                      height: 550,
+                      width: 700,
+                      bar: {groupWidth: "80%"},
+                      chartArea: {width: '60%', height: '80%'},
+                      vAxis: { minValue: 0 },
+                      backgroundColor: "#D3D3D3",
+                      is3D: true,
+                      colors: ["#A13D63", "#D8829D", "#FF9F1C", "#FFD700", "#FFFFFF", "#2660A4", "#66C7F4"]
+                    };
+        
+                    // Change to true if want to use canned data
+                    if (false) {
+                      const data = google.visualization.arrayToDataTable([
+                        ['Date', 'Angry', 'Disgusted', 'Fearful', 'Happy', 'Neutral', 'Sad', 'Surprised'],
+                        ['Monday',    30,      10,           20,        35,      5,        17,       23],
+                        ['Tuesday',   0,       15,           10,        20,      10,       15,       30],
+                        ['Wednesday', 5,       20,           30,        10,      5,        10,       20],
+                        ['Thursday',  0,       0,            0,         0,       0,        0,        0],
+                        ['Friday',    12,      20,           30,        10,      30,       40,       0],
+                        ['Saturday',  14.3,    14.3,         14.3,      14.3,    14.3,     14.3,     14.3],
+                        ['Sunday',    10,      20,           30,        10,      0,        40,       0]
+                      ]);
+                      var chart = new google.visualization.ColumnChart(document.getElementById('chart-container'));
+                      chart.draw(data, options);
+                      return;
+                    }
+        
+                    // Define the chart to be drawn
+                    var rows =  [['Date', 'Angry', 'Disgusted', 'Fearful', 'Happy', 'Neutral', 'Sad', 'Surprised']];
+                    // Iterate through days of week
+                    for (var i = 0; i < days.length; i++) {
+                      const day = days[i];
+                      var row = [day];
+                      // Iterate through types of emotions
+                      for (var j = 1; j < rows[0].length; j++) {
+                        const emotion = rows[0][j].toLowerCase();
+                        row.push(emotions_data[day][emotion]);
+                      }
+                      rows.push(row);
+                    }
+                    var data = google.visualization.arrayToDataTable(rows);
+        
+                    // Instantiate and draw the chart
+                    var chart = new google.visualization.ColumnChart(document.getElementById('chart-container'));
+                    chart.draw(data, options);
+                  }
+                  google.charts.setOnLoadCallback(drawChart);
+                </script>
+            </div>
+          </div>
         </div>
       </div>
-    
-      <div class="split right" style="width: 60%">
-        <p><b>Weekly Pattern</b><br>Track your emotional health for the week.</p>
-        <div id = "chart-container">
-        <script language = "JavaScript">
-          function drawChart() {
-            // Retrieve start and end of week, and weekly emotional data
-            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-            const emotions_data = JSON.parse('{{emotions_data|tojson}}');
-            const start = '{{start_date}}';
-            const end = '{{end_date}}';
-            var options = {
-              title: start + " - " + end,
-              isStacked:'percent',
-              legend: {position: 'right'},
-              height: 550,
-              width: 700,
-              bar: {groupWidth: "80%"},
-              chartArea: {width: '70%', height: '80%'},
-              vAxis: { minValue: 0 },
-              backgroundColor: "#cdedf7",
-              is3D: true,
-              colors: ["#A13D63", "#D8829D", "#FF9F1C", "#FFD700", "#FFFFFF", "#2660A4", "#66C7F4"]
-            };
-
-            // Change to true if want to use canned data
-            if (false) {
-              const data = google.visualization.arrayToDataTable([
-                ['Date', 'Angry', 'Disgusted', 'Fearful', 'Happy', 'Neutral', 'Sad', 'Surprised'],
-                ['Monday',    30,      10,           20,        35,      5,        17,       23],
-                ['Tuesday',   0,       15,           10,        20,      10,       15,       30],
-                ['Wednesday', 5,       20,           30,        10,      5,        10,       20],
-                ['Thursday',  0,       0,            0,         0,       0,        0,        0],
-                ['Friday',    12,      20,           30,        10,      30,       40,       0],
-                ['Saturday',  14.3,    14.3,         14.3,      14.3,    14.3,     14.3,     14.3],
-                ['Sunday',    10,      20,           30,        10,      0,        40,       0]
-              ]);
-              var chart = new google.visualization.ColumnChart(document.getElementById('chart-container'));
-              chart.draw(data, options);
-              return;
-            }
-
-            // Define the chart to be drawn
-            var rows =  [['Date', 'Angry', 'Disgusted', 'Fearful', 'Happy', 'Neutral', 'Sad', 'Surprised']];
-            // Iterate through days of week
-            for (var i = 0; i < days.length; i++) {
-              const day = days[i];
-              var row = [day];
-              // Iterate through types of emotions
-              for (var j = 1; j < rows[0].length; j++) {
-                const emotion = rows[0][j].toLowerCase();
-                row.push(emotions_data[day][emotion]);
-              }
-              rows.push(row);
-            }
-            var data = google.visualization.arrayToDataTable(rows);
-
-            // Instantiate and draw the chart
-            var chart = new google.visualization.ColumnChart(document.getElementById('chart-container'));
-            chart.draw(data, options);
-          }
-          google.charts.setOnLoadCallback(drawChart);
-        </script>
-      </div>
-
     </div> 
 
   </body>

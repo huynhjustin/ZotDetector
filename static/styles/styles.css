@@ -1,6 +1,5 @@
 .header {
   padding: 0.2rem;
-  background: gray;
   color: white;
   font-size: 2rem;
   font-family: sans-serif;
@@ -12,35 +11,56 @@
   color: gold;
 }
 
-/* Split the screen in half */
-.split {
-  height: 92%;
-  width: 50%;
-  position: relative;
-  top: 0;
-  float: left;
-  background-color: gray;
-}
-  
-/* Control the left side */
-.left {
-  left: 0;
-  background-color: white;
-}
-  
-/* Control the right side */
-.right {
-  right: 0;
-  background-color: #cdedf7;
-}
-
-/*Positions the card */
-.card{
-  top: 100px;
-  left: 200px;
+.background{
+  background: gray;
 }
 
 #chart-container {
+  margin: auto;
+  width: fit-content;
+}
+
+.card-border{
+  border-radius: 25px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+
+}
+
+.interface-card-left {
+  margin-top: 50px;
+  margin-bottom: 0px;
+  margin-right: 10px;
+  margin-left: 60px;
+  display: grid;
+}
+
+.interface-card-right {
+  margin-top: 50px;
+  margin-bottom: 0px;
+  margin-right: 20px;
+  margin-left: 10px;
+}
+
+.card-left-content {
+  margin: 0;
   position: absolute;
-  /*margin-top: 10%;*/
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+ .start-button {
+  margin-top: 10%;
+}
+
+.logout{
+  margin: 7px;
+}
+
+.page-labels{
+  margin-left:10px;
+  color: #007BFF;
+  font-size: 1.5rem;
+  font-family: sans-serif;
+
 }
